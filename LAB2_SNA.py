@@ -1,6 +1,10 @@
 import json
-import pandas as pd
 import nltk
+import pandas as pd
+from mpl_toolkits.mplot3d import Axes3D
+Axes3D = Axes3D
+nltk.download('punkt')
+nltk.download('stopwords')
 import re
 import matplotlib.pyplot as plt
 from sklearn.decomposition import IncrementalPCA
@@ -14,7 +18,7 @@ from nltk.stem.snowball import SnowballStemmer
 
 if __name__ == "__main__":
     all_wall = []
-    file = open(r" wall_asp.txt")
+    file = open(r"wall_asp.txt")
     for line in file.readlines():
         string = line
         wall = json.loads(string)
@@ -50,9 +54,8 @@ if __name__ == "__main__":
         for token in tokens:
             if re.search('[а-яА-Я]', token):
                 filtered_tokens.append(token)
-                stems = [stemmer.stem(t) for t in
-                         filtered_tokens]
-                return stems
+        stems = [stemmer.stem(t) for t in filtered_tokens]
+        return stems
 
 
     def token_only(text):
@@ -71,11 +74,10 @@ if __name__ == "__main__":
     totalvocab_token = []
     for i in all_wall:
         allwords_stemmed = token_and_stem(i)
-        # print(allwords_stemmed)
-        totalvocab_stem.extend(allwords_stemmed)
-
-        allwords_tokenized = token_only(i)
-        totalvocab_token.extend(allwords_tokenized)
+        if allwords_stemmed != None:
+            totalvocab_stem.extend(allwords_stemmed)
+            allwords_tokenized = token_only(i)
+            totalvocab_token.extend(allwords_tokenized)
 
     stopwords = nltk.corpus.stopwords.words('russian')
 
@@ -112,7 +114,7 @@ if __name__ == "__main__":
     # DBSCAN
 
     db = DBSCAN(eps=0.3, min_samples=10).fit(tfidf_matrix)
-    labels = db.labels
+    labels = db.labels_
     labels.shape
     print(labels)
 
@@ -160,7 +162,7 @@ if __name__ == "__main__":
     # Можно сразу примерно посмотреть, что получится в итоге
 
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
     ax.scatter(xs, ys, zs)
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
